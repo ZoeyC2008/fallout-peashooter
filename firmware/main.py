@@ -23,7 +23,7 @@ button = digitalio.DigitalInOut(board.GP14)
 button.direction = digitalio.Direction.INPUT
 button.pull = digitalio.Pull.UP
 
-pot = board.A2 # Potentiometer
+# potentiometer = analogio.AnalogIn(board.GP26)
 
 current_angleX = 90
 servoX_speed = 0.5
@@ -71,8 +71,7 @@ while True:
     set_pitch()
     set_yaw()
     
-    if button_pressed:
-        dc_motor.throttle = # pot reading
-        
+    # if button_pressed:
+    #     dc_motor.throttle = # pot reading
 
     time.sleep(0.2)
