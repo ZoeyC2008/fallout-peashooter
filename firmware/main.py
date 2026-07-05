@@ -36,7 +36,7 @@ current_angleX = 90.0
 servoX_speed = 0.15
 current_angleY = 90.0
 servoY_speed = 0.15
-button_pressed = False
+button_toggled = False
 
 xValue = 0
 yValue = 0
@@ -55,50 +55,43 @@ def setLimAngle(angle):
     return max(min(angle, 135),45)
     
 def set_pitch():
-    global current_angleY
+    global current_angleY, button_toggled 
     yValue = get_centered(y_axis)
     if yValue != 0:
-        button_pressed = False
+        button_toggled = False
     
 
-    setangleY = setLimAngle(current_angleY - yValue**3 * servoY_speed/24)
-    servoY.angle = setangleY
-    current_angleY = setangleY
+    current_angleY = setLimAngle(current_angleY - yValue**3 * servoY_speed/24)
+    servoY.angle = current_angleY 
     
     
-def set_yaw():
-    global current_angleX
+def set_yaw():  
+    global current_angleX, button_toggled
 
     xValue = get_centered(x_axis)
 
     if xValue != 0:
-        button_pressed = False
+        button_toggled = False
     
-    setanglex = setLimAngle(current_angleX - xValue**3 * servoX_speed/24)
-    servoX.angle = setanglex
-    current_angleX = setanglex
-    print(current_angleX)
+    current_angleX = setLimAngle(current_angleX - xValue**3 * servoX_speed/24)
+    servoX.angle = current_angleX
+
+    # print(current_angleX)
     
 def check_button():
-    global button_pressed
-    buttonValue = not (button.value)
+    global button_toggled
+    buttonPressed = not (button.value)
     
-    if buttonValue == 1 and button_pressed == False:
-        button_pressed = True
+    if buttonPressed:
+        button_toggled = not button_toggled
         
+        while button.value == 0:
+                print(f"button pressed {button_toggled}")
+                time.sleep(0.1)
         
-    elif buttonValue == 1 and button_pressed == True:
-        button_pressed = False
-        
-    while button.value == 0:
-            print("button pressed")
-            time.sleep(0.05)
-        
-
 
 # Sweep servo from 0 to 180 degrees
-
-    
+ 
 while True:
     set_pitch()
     set_yaw()
@@ -106,8 +99,10 @@ while True:
     # dc_motor.throttle = 0.7
 
 
-    if button_pressed:
+    if button_toggled:
+
         dc_motor.throttle = round_analog(pot)/15*0.3+0.7# pot reading
+    
     else:
         dc_motor.throttle = 0
 
@@ -130,7 +125,7 @@ while True:
     # buttonValue = button.value  # True = not pressed, False = pressed
 
     # print(f"X: {xValue:7.0f}  Y: {yValue:7.0f}  Button: {'PRESSED' if not buttonValue else 'released'} Pot: {potVal:7.0f}")
-    print(f"button_pressed: {button_pressed}  button.value: {buttonvalue}")
+    print(f"button_toggled: {button_toggled}  button.value: {buttonvalue}")
 
     time.sleep(0.01)
     
